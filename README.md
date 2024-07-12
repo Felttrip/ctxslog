@@ -1,6 +1,7 @@
 # ctxslog
 An [slog](https://pkg.go.dev/log/slog) handler to pull shared information from `context.Context` for use with structured logging.
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/felttrip/ctxslog.svg)](https://pkg.go.dev/github.com/felttrip/ctxslog)
 # Installation 
 ```
 go get github.com/felttrip/ctxslog
