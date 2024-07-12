@@ -94,47 +94,6 @@ func TestHandlerHandle(t *testing.T) {
 	})
 }
 
-type ComplexData struct {
-	IntField   int
-	StrField   string
-	BoolField  bool
-	SliceField []string
-}
-
-func ExampleHandler() {
-	slog.SetDefault(slog.New(ctxslog.NewHandler(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
-			// Remove time from the output for predictable test output.
-			if a.Key == slog.TimeKey {
-				return slog.Attr{}
-			}
-			return a
-		},
-	}))))
-
-	ctx := ctxslog.WithValue(context.Background(), "AccountID", 123456789)
-	ctx = ctxslog.WithValue(ctx, "email", "noone@felttrip.com")
-	ctx = ctxslog.WithValue(ctx, "sender", "greg@BailysInAShoe.lake")
-
-	slog.InfoContext(ctx, "Info With Context")
-	ctx = ctxslog.WithValues(context.Background(), map[string]interface{}{
-		"AccountID": 987654321,
-		"email":     "bob@TheBuilder.fake",
-		"complexData": ComplexData{
-			IntField:   123,
-			StrField:   "DEADBEEF",
-			BoolField:  true,
-			SliceField: []string{"one", "two", "three"},
-		},
-	})
-
-	slog.ErrorContext(ctx, "Error With Context")
-	// Output:
-	//{"level":"INFO","msg":"Info With Context","AccountID":123456789,"email":"noone@felttrip.com","sender":"greg@BailysInAShoe.lake"}
-	//{"level":"ERROR","msg":"Error With Context","AccountID":987654321,"email":"bob@TheBuilder.fake","complexData":{"IntField":123,"StrField":"DEADBEEF","BoolField":true,"SliceField":["one","two","three"]}}
-
-}
-
 func TestHandlerWithAttrs(t *testing.T) {
 	mockHandler := &MockHandler{}
 	handler := ctxslog.NewHandler(mockHandler)
@@ -179,6 +138,82 @@ func TestHandlerWithGroup(t *testing.T) {
 	if mockHandler.WithGroupName != groupName {
 		t.Error("MockHandler.WithGroup did not receive the correct group name")
 	}
+}
+
+// Examples
+
+func ExampleNewHandler() {
+	slog.SetDefault(slog.New(ctxslog.NewHandler(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			// Remove time from the output for predictable test output.
+			if a.Key == slog.TimeKey {
+				return slog.Attr{}
+			}
+			return a
+		},
+	}))))
+
+	ctx := ctxslog.WithValue(context.Background(), "AccountID", 123456789)
+
+	slog.InfoContext(ctx, "Info With Context")
+	// Output:
+	//{"level":"INFO","msg":"Info With Context","AccountID":123456789}
+}
+
+func ExampleWithValue() {
+	slog.SetDefault(slog.New(ctxslog.NewHandler(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			// Remove time from the output for predictable test output.
+			if a.Key == slog.TimeKey {
+				return slog.Attr{}
+			}
+			return a
+		},
+	}))))
+
+	ctx := ctxslog.WithValue(context.Background(), "AccountID", 123456789)
+	ctx = ctxslog.WithValue(ctx, "email", "noone@felttrip.com")
+	ctx = ctxslog.WithValue(ctx, "sender", "greg@BailysInAShoe.lake")
+
+	slog.InfoContext(ctx, "Info With Context")
+
+	// Output:
+	//{"level":"INFO","msg":"Info With Context","AccountID":123456789,"email":"noone@felttrip.com","sender":"greg@BailysInAShoe.lake"}
+}
+
+func ExampleWithValues() {
+	slog.SetDefault(slog.New(ctxslog.NewHandler(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			// Remove time from the output for predictable test output.
+			if a.Key == slog.TimeKey {
+				return slog.Attr{}
+			}
+			return a
+		},
+	}))))
+
+	ctx := ctxslog.WithValues(context.Background(), map[string]interface{}{
+		"AccountID": 987654321,
+		"email":     "bob@TheBuilder.fake",
+		"complexData": ComplexData{
+			IntField:   123,
+			StrField:   "DEADBEEF",
+			BoolField:  true,
+			SliceField: []string{"one", "two", "three"},
+		},
+	})
+
+	slog.ErrorContext(ctx, "Error With Context")
+	// Output:
+	//{"level":"INFO","msg":"Info With Context","AccountID":123456789,"email":"noone@felttrip.com","sender":"greg@BailysInAShoe.lake"}
+}
+
+// ComplexData is a struct used in the examples.
+type ComplexData struct {
+	IntField   int
+	StrField   string
+	BoolField  bool
+	SliceField []string
 }
 
 // MockHandler is a mock implementation of slog.Handler for testing purposes.
