@@ -24,11 +24,13 @@ func (h Handler) Enabled(ctx context.Context, lvl slog.Level) bool {
 
 // Handle implements slog.Handler.
 func (h Handler) Handle(ctx context.Context, r slog.Record) error {
-	loggedFields.mu.Lock()
-	for k, _ := range loggedFields.fields {
-		r.AddAttrs(slog.Any(string(k), ctx.Value(k)))
+	if sm := ctx.Value(fieldsKey).(*safeMap); sm != nil {
+		sm.mu.Lock()
+		for k, v := range sm.fields {
+			r.AddAttrs(slog.Any(string(k), v))
+		}
+		sm.mu.Unlock()
 	}
-	loggedFields.mu.Unlock()
 	return h.handler.Handle(ctx, r)
 }
 
