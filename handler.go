@@ -24,7 +24,7 @@ func (h Handler) Enabled(ctx context.Context, lvl slog.Level) bool {
 
 // Handle implements slog.Handler.
 func (h Handler) Handle(ctx context.Context, r slog.Record) error {
-	if sm := ctx.Value(fieldsKey).(*safeMap); sm != nil {
+	if sm, ok := ctx.Value(fieldsKey).(*safeMap); ok {
 		sm.mu.Lock()
 		for k, v := range sm.fields {
 			r.AddAttrs(slog.Any(string(k), v))
