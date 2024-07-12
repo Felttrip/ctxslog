@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -23,7 +24,7 @@ func main() {
 	ctx = ctxslog.WithValue(ctx, "sender", "greg@BailysInAShoe.lake")
 
 	slog.InfoContext(ctx, "Info With Context")
-
+	fmt.Println()
 	ctx = ctxslog.WithValues(context.Background(), map[string]interface{}{
 		"AccountID": 987654321,
 		"email":     "bob@TheBuilder.fake",
